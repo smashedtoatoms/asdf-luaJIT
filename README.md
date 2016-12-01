@@ -3,8 +3,6 @@
 LuaJIT plugin for [asdf](https://github.com/asdf-vm/asdf) version manager
 
 ## Dependencies
-_This requires [brew](http://brew.sh) if you're on a mac, or a debian flavored linux.  If you need it to work on something else, you'll likely need to modify the plugin._
-
 1. You will need a compiler.
   * Mac
     1. ```gcc```
@@ -32,7 +30,9 @@ When installing LuaJIT using `asdf install`, you can pass custom configure optio
 # How to use (easier version)
 ## Install
 1. Create your .tool-versions file in the project that needs luaJIT and add `luaJIT 2.0.4` or whatever version that you want.
+2. Add a `LUAJIT_EXTRA_CONFIGURE_OPTIONS` environment variable with config options _You probably don't want/need to do this._
 2. run `asdf install`
 
 ## Run
-1. Once it is done, run `lua`
+1. Once it is done, run `luajit`.  If it says something about having no version set, make sure you set luaJIT <version> in your ~/.tool-versions file.
+2. If you want LuaRocks (package manager), check out [luarocks](https://github.com/smashedtoatoms/asdf-luarocks.git)

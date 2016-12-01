@@ -1,6 +1,6 @@
 
 language: c
-script: asdf plugin-test elixir https://github.com/smashedtoatoms/asdf-luaJIT.git
+script: asdf plugin-test luaJIT https://github.com/smashedtoatoms/asdf-luaJIT.git
 before_script:
   - git clone https://github.com/asdf-vm/asdf.git
   - . asdf/asdf.sh

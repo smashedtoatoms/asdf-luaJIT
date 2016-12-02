@@ -35,4 +35,4 @@ When installing LuaJIT using `asdf install`, you can pass custom configure optio
 
 ## Run
 1. Once it is done, run `luajit`.  If it says something about having no version set, make sure you set luaJIT <version> in your ~/.tool-versions file.
-2. If you want LuaRocks (package manager), check out [luarocks](https://github.com/smashedtoatoms/asdf-luarocks.git)
+2. If you want LuaRocks (package manager), check out [asdf-luaJIT-luarocks](https://github.com/smashedtoatoms/asdf-luaJIT-luarocks.git)

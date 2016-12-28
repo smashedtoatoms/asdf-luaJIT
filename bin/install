@@ -15,8 +15,8 @@ install_luaJIT() {
 
   local luaJIT_source_path=$(get_luaJIT_download_file_path $install_type $luaJIT_version $tmp_download_dir)
   local lua_rocks_source_path=$(get_lua_rocks_download_file_path $install_type $lua_rocks_version $tmp_download_dir)
-  local download_luaJIT_source $install_type $luaJIT_version $luaJIT_source_path
-  local download_lua_rocks_source $install_type $lua_rocks_version $lua_rocks_source_path
+  download_luaJIT_source $install_type $luaJIT_version $luaJIT_source_path
+  download_lua_rocks_source $install_type $lua_rocks_version $lua_rocks_source_path
 
   # running this in a subshell
   # because we don't want to disturb current working dir

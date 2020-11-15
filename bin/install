@@ -34,6 +34,13 @@ install_luaJIT() {
     make $luaJIT_configure_options || exit 1
     make install $luaJIT_configure_options || exit 1
 
+    # luajit beta versions do not symlink luajit to the built binary,
+    # so we'll do that manually here, for convenience and also so
+    # luarocks can install.
+    if [[ $luaJIT_version == *"beta"* ]]; then
+      ln -sf luajit-$luaJIT_version $ASDF_INSTALL_PATH/bin/luajit
+    fi
+
     ##########################################################################
 
     cd $(dirname $lua_rocks_source_path)

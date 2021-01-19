@@ -1,4 +1,4 @@
-# asdf-luaJIT ![Build](https://github.com/smashedtoatoms/asdf-luaJIT/workflows/Build/badge.svg?branch=main)
+# asdf-luaJIT ![Build](https://github.com/smashedtoatoms/asdf-luaJIT/workflows/Build/badge.svg?branch=master)
 
 LuaJIT plugin for [asdf](https://github.com/asdf-vm/asdf) version manager
 

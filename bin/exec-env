@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+
+plugin_name="luaJIT"
+
+install_path="$(asdf where lua)"
+full_version="$( echo $install_path | rev | cut -d/ -f1 | rev)"
+
+short_lua_version=""
+
+if [ "$full_version" != "system" ]; then
+	IFS='.' read -r -a splitted_version <<< "$full_version"
+	short_lua_version="${splitted_version[0]}.${splitted_version[1]}"
+fi
+
+package_path_override="package.path = package.path .. '\
+;${install_path}/share/lua/${short_lua_version}/?.lua\
+;${install_path}/share/lua/${short_lua_version}/?/init.lua\
+;${install_path}/luarocks/share/lua/${short_lua_version}/?.lua\
+;${install_path}/luarocks/share/lua/${short_lua_version}/?/init.lua'"
+
+package_cpath_override="package.cpath = package.cpath .. '\
+;${install_path}/lib/lua/${short_lua_version}/?.so\
+;${install_path}/luarocks/lib/lua/${short_lua_version}/?.so'"
+
+export LUA_INIT="${package_path_override}
+${package_cpath_override}"

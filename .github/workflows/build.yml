@@ -22,3 +22,5 @@ jobs:
         with:
           version: 2.1.0-beta3--3.4.0
           command: luajit -v
+        env:
+          PATH: /usr/bin:/bin:/usr/sbin:/sbin:$PATH

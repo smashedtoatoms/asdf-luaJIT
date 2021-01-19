@@ -17,10 +17,10 @@ jobs:
         os: [ubuntu-latest, macos-latest]
     runs-on: ${{ matrix.os }}
     steps:
+      - name: install_dependencies
+        run: brew install ninja libtool automake cmake pkg-config gettext
       - name: asdf_plugin_test
         uses: asdf-vm/actions/plugin-test@v1
         with:
           version: 2.1.0-beta3--3.4.0
           command: luajit -v
-        env:
-          PATH: /usr/bin:/bin:/usr/sbin:/sbin:$PATH

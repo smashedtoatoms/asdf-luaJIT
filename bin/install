@@ -54,11 +54,10 @@ install_luaJIT() {
 
     echo "Building luarocks with options: $lua_rocks_configure_options"
     ./configure $lua_rocks_configure_options || exit 1
-    make || exit 1
+    make build || exit 1
     make install || exit 1
   )
 }
-
 
 construct_luaJIT_configure_options() {
   if [ "$LUAJIT_CONFIGURE_OPTIONS" = "" ]; then
@@ -73,7 +72,6 @@ construct_luaJIT_configure_options() {
 
   echo "$configure_options"
 }
-
 
 construct_lua_rocks_configure_options() {
   luaJIT_version=$1
@@ -92,46 +90,39 @@ construct_lua_rocks_configure_options() {
   echo "$configure_options"
 }
 
-
 os_based_luaJIT_configure_options() {
   local configure_options=""
   echo $configure_options
 }
-
 
 os_based_lua_rocks_configure_options() {
   local configure_options=""
   echo $configure_options
 }
 
-
 untar_luaJIT_path() {
   local install_type=$1
   local version=$2
   local tmp_download_dir=$3
 
-  if [ "$install_type" = "version" ]
-  then
+  if [ "$install_type" = "version" ]; then
     echo "$tmp_download_dir/LuaJIT-${version}"
   else
     echo "$tmp_download_dir/LuaJIT-${version}"
   fi
 }
-
 
 untar_lua_rocks_path() {
   local install_type=$1
   local version=$2
   local tmp_download_dir=$3
 
-  if [ "$install_type" = "version" ]
-  then
+  if [ "$install_type" = "version" ]; then
     echo "$tmp_download_dir/luarocks-${version}"
   else
     echo "$tmp_download_dir/luarocks-${version}"
   fi
 }
-
 
 download_luaJIT_source() {
   local install_type=$1
@@ -151,7 +142,6 @@ download_lua_rocks_source() {
   curl -Lo $download_path -C - $download_url
 }
 
-
 get_luaJIT_download_file_path() {
   local install_type=$1
   local version=$2
@@ -160,7 +150,6 @@ get_luaJIT_download_file_path() {
 
   echo "$tmp_download_dir/$pkg_name"
 }
-
 
 get_lua_rocks_download_file_path() {
   local install_type=$1
@@ -171,19 +160,16 @@ get_lua_rocks_download_file_path() {
   echo "$tmp_download_dir/$pkg_name"
 }
 
-
 get_luaJIT_download_url() {
   local install_type=$1
   local version=$2
   echo "http://luajit.org/download/LuaJIT-${version}.tar.gz"
 }
 
-
 get_lua_rocks_download_url() {
   local install_type=$1
   local version=$2
   echo "http://luarocks.github.io/luarocks/releases/luarocks-${version}.tar.gz"
 }
-
 
 install_luaJIT $ASDF_INSTALL_TYPE $ASDF_INSTALL_VERSION $ASDF_INSTALL_PATH

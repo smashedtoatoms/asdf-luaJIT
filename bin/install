@@ -52,7 +52,7 @@ install_luaJIT() {
 
     echo "Building luarocks with options: $lua_rocks_configure_options"
     ./configure $lua_rocks_configure_options || exit 1
-    make build || exit 1
+    make build || make || exit 1
     make install || exit 1
   )
 }

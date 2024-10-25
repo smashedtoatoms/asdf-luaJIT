@@ -18,7 +18,7 @@ You specify both versions in the asdf version.  For example, if you want luaJIT 
 ## Install
 
 ```
-asdf plugin-add luaJIT https://github.com/smashedtoatoms/asdf-luaJIT.git
+asdf plugin-add luajit https://github.com/smashedtoatoms/asdf-luaJIT.git
 ```
 
 ## ASDF options

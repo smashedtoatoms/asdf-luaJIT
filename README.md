@@ -35,8 +35,12 @@ When installing LuaJIT using `asdf install`, you can pass custom configure optio
 # How to use (easier version)
 ## Install
 1. Create your .tool-versions file in the project that needs luaJIT and add `luaJIT 2.0.5--2.4.4` or whatever version that you want. __Note: the version is luaJITVersion--luarocksVersion__
-2. Add a `LUAJIT_EXTRA_CONFIGURE_OPTIONS` and/or `LUAROCKS_EXTRA_CONFIGURE_OPTIONS` environment variables with config options if you want. _You probably don't want/need to do this._
-2. run `asdf install`
+2. Add a `LUAJIT_EXTRA_CONFIGURE_OPTIONS` and/or
+   `LUAROCKS_EXTRA_CONFIGURE_OPTIONS` environment variables with config options
+   if you want. _You probably don't want/need to do this._
+3. run `asdf install` (if on mac, you now need to set MACOSX_DEPLOYMENT_TARGET,
+   so it will look like `MACOSX_DEPLOYMENT_TARGET=15.0 asdf install` for Sequoia
+   for example)
 
 ## Run
 1. Once it is done, run `luajit`.  If it says something about having no version set, make sure you set `luaJIT luaJITVersion--luarocksVersion` in your ~/.tool-versions file.

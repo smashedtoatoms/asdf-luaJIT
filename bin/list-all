@@ -8,7 +8,9 @@ list_all_git_tags() {
 
   for i in "${!luajit_tags[@]}"; do
     for j in "${!luarocks_tags[@]}"; do
-      echo "${luajit_tags[i]}--${luarocks_tags[j]}"
+      if [[ ${luajit_tags[i]} != *"ROLLING"* ]]; then
+        echo "${luajit_tags[i]}--${luarocks_tags[j]}"
+      fi
     done
   done
 }

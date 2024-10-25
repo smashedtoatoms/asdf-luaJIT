@@ -21,9 +21,7 @@ install_luaJIT() {
   # running this in a subshell
   # because we don't want to disturb current working dir
   (
-    cd $(dirname $luaJIT_source_path)
-    tar zxf $luaJIT_source_path || exit 1
-    cd $(untar_luaJIT_path $install_type $luaJIT_version $tmp_download_dir)
+    cd ${luaJIT_source_path}
 
     local luaJIT_configure_options="$(construct_luaJIT_configure_options)"
     # set in os_based_configure_options
@@ -100,18 +98,6 @@ os_based_lua_rocks_configure_options() {
   echo $configure_options
 }
 
-untar_luaJIT_path() {
-  local install_type=$1
-  local version=$2
-  local tmp_download_dir=$3
-
-  if [ "$install_type" = "version" ]; then
-    echo "$tmp_download_dir/LuaJIT-${version}"
-  else
-    echo "$tmp_download_dir/LuaJIT-${version}"
-  fi
-}
-
 untar_lua_rocks_path() {
   local install_type=$1
   local version=$2
@@ -128,9 +114,11 @@ download_luaJIT_source() {
   local install_type=$1
   local version=$2
   local download_path=$3
-  local download_url=$(get_luaJIT_download_url $install_type $version)
+  local download_url=$(get_luaJIT_download_url)
 
-  curl -Lo $download_path -C - $download_url
+  echo clone luajit from ${download_url} into ${download_path}
+
+  git clone --branch=v$version $download_url $download_path
 }
 
 download_lua_rocks_source() {
@@ -146,7 +134,7 @@ get_luaJIT_download_file_path() {
   local install_type=$1
   local version=$2
   local tmp_download_dir=$3
-  local pkg_name="LuaJIT-${version}.tar.gz"
+  local pkg_name="LuaJIT-${version}"
 
   echo "$tmp_download_dir/$pkg_name"
 }
@@ -161,15 +149,13 @@ get_lua_rocks_download_file_path() {
 }
 
 get_luaJIT_download_url() {
-  local install_type=$1
-  local version=$2
-  echo "http://luajit.org/download/LuaJIT-${version}.tar.gz"
+  echo "https://luajit.org/git/luajit.git"
 }
 
 get_lua_rocks_download_url() {
   local install_type=$1
   local version=$2
-  echo "http://luarocks.github.io/luarocks/releases/luarocks-${version}.tar.gz"
+  echo "https://luarocks.github.io/luarocks/releases/luarocks-${version}.tar.gz"
 }
 
 install_luaJIT $ASDF_INSTALL_TYPE $ASDF_INSTALL_VERSION $ASDF_INSTALL_PATH

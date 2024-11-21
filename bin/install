@@ -162,9 +162,21 @@ download_luaJIT_source() {
   local download_url
   download_url=$(get_luaJIT_download_url)
 
-  echo clone luajit from "${download_url}" into "${download_path}"
-
-  git clone --branch=v"$version" "$download_url" "$download_path"
+  if ! [[ -d "$download_path" ]]; then
+    echo clone luajit from "${download_url}" into "${download_path}"
+    git clone --branch=v"$version" "$download_url" "$download_path"
+  else
+    if [[ $(git -C "$download_path" remote get-url origin) != $(get_luaJIT_download_url) ]]; then
+      echo "download directory already exists, but does not look like a usable clone" 1>&2
+      echo "download directory: ${download_path}" 1>&2
+      exit 1
+    fi
+    # clean up the directory, and make sure we're on the right branch/tag
+    git -C "$download_path" fetch
+    git -C "$download_path" clean -d -x -f
+    git -C "$download_path" reset --hard
+    git -C "$download_path" checkout v"$version"
+  fi
 }
 
 download_lua_rocks_source() {

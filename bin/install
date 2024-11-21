@@ -4,8 +4,8 @@ install_luaJIT() {
   local install_type=$1
   local raw_version=$2
   local install_path=$3
-  local luaJIT_version=$(echo $raw_version | sed -e 's/--.*$//g')
-  local lua_rocks_version=$(echo $raw_version | sed -e "s/^.*--//g")
+  local luaJIT_version=$(echo "$raw_version" | sed -e 's/--.*$//g')
+  local lua_rocks_version=$(echo "$raw_version" | sed -e "s/^.*--//g")
 
   if [ "$TMPDIR" = "" ]; then
     local tmp_download_dir=$(mktemp -d)
@@ -13,15 +13,15 @@ install_luaJIT() {
     local tmp_download_dir=$TMPDIR
   fi
 
-  local luaJIT_source_path=$(get_luaJIT_download_file_path $install_type $luaJIT_version $tmp_download_dir)
-  local lua_rocks_source_path=$(get_lua_rocks_download_file_path $install_type $lua_rocks_version $tmp_download_dir)
-  download_luaJIT_source $install_type $luaJIT_version $luaJIT_source_path
-  download_lua_rocks_source $install_type $lua_rocks_version $lua_rocks_source_path
+  local luaJIT_source_path=$(get_luaJIT_download_file_path "$install_type" "$luaJIT_version" "$tmp_download_dir")
+  local lua_rocks_source_path=$(get_lua_rocks_download_file_path "$install_type" "$lua_rocks_version" "$tmp_download_dir")
+  download_luaJIT_source "$install_type" "$luaJIT_version" "$luaJIT_source_path"
+  download_lua_rocks_source "$install_type" "$lua_rocks_version" "$lua_rocks_source_path"
 
   # running this in a subshell
   # because we don't want to disturb current working dir
   (
-    cd ${luaJIT_source_path}
+    cd "${luaJIT_source_path}" || exit
 
     local luaJIT_configure_options="$(construct_luaJIT_configure_options)"
     # set in os_based_configure_options
@@ -33,21 +33,21 @@ install_luaJIT() {
     fi
 
     echo "Building luaJIT with options: $luaJIT_configure_options"
-    make amalg $luaJIT_configure_options || exit 1
-    make install $luaJIT_configure_options || exit 1
+    make amalg "$luaJIT_configure_options" || exit 1
+    make install "$luaJIT_configure_options" || exit 1
 
     # luajit beta versions do not symlink luajit to the built binary,
     # so we'll do that manually here, for convenience and also so
     # luarocks can install.
     if [[ $luaJIT_version == *"beta"* ]]; then
-      ln -sf luajit-$luaJIT_version $ASDF_INSTALL_PATH/bin/luajit
+      ln -sf luajit-"$luaJIT_version" "$ASDF_INSTALL_PATH"/bin/luajit
     fi
 
     ##########################################################################
 
-    cd $(dirname $lua_rocks_source_path)
-    tar zxf $lua_rocks_source_path || exit 1
-    cd $(untar_lua_rocks_path $install_type $lua_rocks_version $tmp_download_dir)
+    cd $(dirname "$lua_rocks_source_path") || exit
+    tar zxf "$lua_rocks_source_path" || exit 1
+    cd $(untar_lua_rocks_path "$install_type" "$lua_rocks_version" "$tmp_download_dir") || exit
 
     local lua_rocks_configure_options="$(construct_lua_rocks_configure_options)"
     # set in os_based_configure_options
@@ -55,7 +55,7 @@ install_luaJIT() {
     unset ASDF_PKG_MISSING
 
     echo "Building luarocks with options: $lua_rocks_configure_options"
-    ./configure $lua_rocks_configure_options || exit 1
+    ./configure "$lua_rocks_configure_options" || exit 1
     make build || make || exit 1
     make install || exit 1
   )
@@ -78,7 +78,7 @@ construct_luaJIT_configure_options() {
 construct_lua_rocks_configure_options() {
   luaJIT_version=$1
   if [ "$LUAROCKS_CONFIGURE_OPTIONS" = "" ]; then
-    local luaJIT_include_version="$(ls $install_path/include | head -1)"
+    local luaJIT_include_version="$(ls "$install_path"/include | head -1)"
     local luaJIT_include_path="$install_path/include/$luaJIT_include_version"
     local configure_options="$(os_based_lua_rocks_configure_options) --prefix=$install_path --lua-suffix=jit --with-lua=$install_path --with-lua-include=$luaJIT_include_path"
 
@@ -94,12 +94,12 @@ construct_lua_rocks_configure_options() {
 
 os_based_luaJIT_configure_options() {
   local configure_options=""
-  echo $configure_options
+  echo "$configure_options"
 }
 
 os_based_lua_rocks_configure_options() {
   local configure_options=""
-  echo $configure_options
+  echo "$configure_options"
 }
 
 untar_lua_rocks_path() {
@@ -120,18 +120,18 @@ download_luaJIT_source() {
   local download_path=$3
   local download_url=$(get_luaJIT_download_url)
 
-  echo clone luajit from ${download_url} into ${download_path}
+  echo clone luajit from "${download_url}" into "${download_path}"
 
-  git clone --branch=v$version $download_url $download_path
+  git clone --branch=v"$version" "$download_url" "$download_path"
 }
 
 download_lua_rocks_source() {
   local install_type=$1
   local version=$2
   local download_path=$3
-  local download_url=$(get_lua_rocks_download_url $install_type $version)
+  local download_url=$(get_lua_rocks_download_url "$install_type" "$version")
 
-  curl -Lo $download_path -C - $download_url
+  curl -Lo "$download_path" -C - "$download_url"
 }
 
 get_luaJIT_download_file_path() {
@@ -162,4 +162,4 @@ get_lua_rocks_download_url() {
   echo "https://luarocks.github.io/luarocks/releases/luarocks-${version}.tar.gz"
 }
 
-install_luaJIT $ASDF_INSTALL_TYPE $ASDF_INSTALL_VERSION $ASDF_INSTALL_PATH
+install_luaJIT "$ASDF_INSTALL_TYPE" "$ASDF_INSTALL_VERSION" "$ASDF_INSTALL_PATH"

@@ -25,7 +25,7 @@ list_luarocks_git_tags() {
 
 list_git_tags() {
   local repo=${1}
-  git ls-remote --tags --refs --sort='v:refname' ${repo} |
+  git ls-remote --tags --refs --sort='v:refname' "${repo}" |
     grep -o 'refs/tags/.*' |
     cut -d/ -f3- |
     sed 's/^v//'

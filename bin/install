@@ -33,7 +33,7 @@ install_luaJIT() {
     fi
 
     echo "Building luaJIT with options: $luaJIT_configure_options"
-    make $luaJIT_configure_options || exit 1
+    make amalg $luaJIT_configure_options || exit 1
     make install $luaJIT_configure_options || exit 1
 
     # luajit beta versions do not symlink luajit to the built binary,

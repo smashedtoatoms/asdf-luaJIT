@@ -16,13 +16,20 @@ install_luaJIT() {
   local luaJIT_version="${raw_version%%--*}"
   local lua_rocks_version="${raw_version##*--}"
 
+  local tmp_download_dir
   if [ "$TMPDIR" = "" ]; then
-    local tmp_download_dir
     tmp_download_dir=$(mktemp -d)
   else
-    local tmp_download_dir
     tmp_download_dir=$TMPDIR
   fi
+
+  # canonicalize the path.
+  # this has several benefits:
+  #  1. if the luajit/luarocks build-systems also does this (hint: they do),
+  #     then the path we use here will be guaranteed to be identical.
+  #  2. this removes silly stuff like //, /./ throughout the path,
+  #     and removes a trailing slash (e.g. macOS's $TMPDIR).
+  tmp_download_dir=$(realpath -- "$tmp_download_dir")
 
   local luaJIT_source_path
   luaJIT_source_path=$(get_luaJIT_download_file_path "$install_type" "$luaJIT_version" "$tmp_download_dir")

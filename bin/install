@@ -28,6 +28,10 @@ install_luaJIT() {
     # we unset it here because echo-ing changes the return value of the function
     unset ASDF_PKG_MISSING
 
+    if [[ "$OSTYPE" = "darwin"* ]] && [[ -z "$MACOSX_DEPLOYMENT_TARGET" ]]; then
+      export MACOSX_DEPLOYMENT_TARGET=$(/usr/bin/sw_vers --productVersion)
+    fi
+
     echo "Building luaJIT with options: $luaJIT_configure_options"
     make $luaJIT_configure_options || exit 1
     make install $luaJIT_configure_options || exit 1

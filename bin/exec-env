@@ -1,9 +1,6 @@
 #!/usr/bin/env bash
 
-plugin_name="luaJIT"
-
 install_path="$(asdf where luajit)"
-full_version="$( echo "$install_path" | rev | cut -d/ -f1 | rev)"
 
 short_lua_version="5.1"
 

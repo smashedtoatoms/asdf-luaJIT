@@ -9,6 +9,9 @@
 # Without set -f, $USER_EXTRA_ARGS can be subject to any glob patterns therein!
 set -f
 
+# fail-fast
+set -euo pipefail
+
 install_luaJIT() {
   local install_type=$1
   local raw_version=$2
@@ -17,7 +20,7 @@ install_luaJIT() {
   local lua_rocks_version="${raw_version##*--}"
 
   local tmp_download_dir
-  if [ "$TMPDIR" = "" ]; then
+  if [[ "${TMPDIR-}" == "" ]]; then
     tmp_download_dir=$(mktemp -d)
   else
     tmp_download_dir=$TMPDIR
@@ -54,7 +57,7 @@ install_luaJIT() {
     # we unset it here because echo-ing changes the return value of the function
     unset ASDF_PKG_MISSING
 
-    if [[ "$OSTYPE" = "darwin"* ]] && [[ -z "$MACOSX_DEPLOYMENT_TARGET" ]]; then
+    if [[ "$OSTYPE" = "darwin"* ]] && [[ -z "${MACOSX_DEPLOYMENT_TARGET-}" ]]; then
       MACOSX_DEPLOYMENT_TARGET=$(/usr/bin/sw_vers --productVersion)
       export MACOSX_DEPLOYMENT_TARGET
     fi
@@ -98,18 +101,18 @@ install_luaJIT() {
 
 construct_luaJIT_configure_options() {
   local configure_options=()
-  if [ "${LUAJIT_CONFIGURE_OPTIONS:-}" = "" ]; then
+  if [[ "${LUAJIT_CONFIGURE_OPTIONS-}" == "" ]]; then
     # we want typical IFS splitting here,
     # and we've set -f earlier, so this is fine.
     # shellcheck disable=SC2206
     configure_options=(
       PREFIX="$install_path"
-      $LUAJIT_EXTRA_CONFIGURE_OPTIONS 
+      ${LUAJIT_EXTRA_CONFIGURE_OPTIONS-}
     )
   else
     # shellcheck disable=SC2206
     configure_options=(
-      $LUAJIT_CONFIGURE_OPTIONS
+      ${LUAJIT_CONFIGURE_OPTIONS-}
       PREFIX="$install_path"
     )
   fi
@@ -118,7 +121,7 @@ construct_luaJIT_configure_options() {
 }
 
 construct_lua_rocks_configure_options() {
-  if [ "$LUAROCKS_CONFIGURE_OPTIONS" = "" ]; then
+  if [[ "${LUAROCKS_CONFIGURE_OPTIONS-}" == "" ]]; then
     local luaJIT_include_path
     luaJIT_include_path="$(find "$install_path"/include -depth 1)"
     local configure_options=(
@@ -129,12 +132,12 @@ construct_lua_rocks_configure_options() {
     )
     # shellcheck disable=SC2206
     configure_options+=(
-      $LUAROCKS_EXTRA_CONFIGURE_OPTIONS 
+      ${LUAROCKS_EXTRA_CONFIGURE_OPTIONS-}
     )
   else
     # shellcheck disable=SC2206
     local configure_options=(
-      $LUAROCKS_CONFIGURE_OPTIONS
+      ${LUAROCKS_CONFIGURE_OPTIONS-}
     )
 
     configure_options+=("PREFIX=$install_path")

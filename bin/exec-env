@@ -1,18 +1,5 @@
 #!/usr/bin/env bash
 
-install_path="$(asdf where luajit)"
+# let luarocks provide LUA_PATH and LUA_CPATH:
+eval "$("$ASDF_INSTALL_PATH"/luarocks/bin/luarocks path --no-bin)"
 
-short_lua_version="5.1"
-
-package_path_override="package.path = package.path .. '\
-;${install_path}/share/lua/${short_lua_version}/?.lua\
-;${install_path}/share/lua/${short_lua_version}/?/init.lua\
-;${install_path}/luarocks/share/lua/${short_lua_version}/?.lua\
-;${install_path}/luarocks/share/lua/${short_lua_version}/?/init.lua'"
-
-package_cpath_override="package.cpath = package.cpath .. '\
-;${install_path}/lib/lua/${short_lua_version}/?.so\
-;${install_path}/luarocks/lib/lua/${short_lua_version}/?.so'"
-
-export LUA_INIT="${package_path_override}
-${package_cpath_override}"

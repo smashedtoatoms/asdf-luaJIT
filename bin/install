@@ -16,8 +16,9 @@ install_luaJIT() {
   local install_type=$1
   local raw_version=$2
   local install_path=$3
-  local luaJIT_version="${raw_version%%--*}"
-  local lua_rocks_version="${raw_version##*--}"
+  local luaJIT_version=$raw_version
+  local lua_rocks_version
+  lua_rocks_version="${LUAROCKS_VERSION:-$(get_latest_luarocks_version)}"
 
   local tmp_download_dir
   if [[ "${TMPDIR-}" == "" ]]; then
@@ -78,8 +79,10 @@ install_luaJIT() {
     ##########################################################################
 
     cd "$(dirname "$lua_rocks_source_path")" || exit 1
+    local source_dir
+    source_dir=$(untar_lua_rocks_path "$install_type" "$lua_rocks_version" "$tmp_download_dir")
     tar zxf "$lua_rocks_source_path" || exit 1
-    cd "$(untar_lua_rocks_path "$install_type" "$lua_rocks_version" "$tmp_download_dir")" || exit
+    cd "$source_dir"
 
     local lua_rocks_configure_options=()
     while IFS='' read -r line; do
@@ -94,8 +97,19 @@ install_luaJIT() {
     printf " %q" "${lua_rocks_configure_options[@]}"
     printf "\n"
     ./configure "${lua_rocks_configure_options[@]}" || exit 1
-    make build || make || exit 1
-    make install || exit 1
+    make bootstrap || exit 1
+
+    # the install leaves some references to the build dir; remove them:
+    local file
+    for file in "$ASDF_INSTALL_PATH"/luarocks/bin/{luarocks,luarocks-admin}; do
+      # this is the path entry that we want to remove
+      local pattern="${source_dir}/src/?.lua;"
+      local replacement=""
+      local contents
+      IFS='' read -r -d '' contents < "$file" || true
+      truncate -c -s 0 "$file"
+      printf "%s" "${contents//$pattern/$replacement}" >> "$file"
+    done
   )
 }
 
@@ -125,10 +139,11 @@ construct_lua_rocks_configure_options() {
     local luaJIT_include_path
     luaJIT_include_path="$(find "$install_path"/include -depth 1)"
     local configure_options=(
-      --prefix="$install_path"
+      --prefix="$install_path/luarocks"
       --lua-suffix="jit"
       --with-lua="$install_path"
       --with-lua-include="$luaJIT_include_path"
+      --with-lua-lib="$install_path/lib"
     )
     # shellcheck disable=SC2206
     configure_options+=(
@@ -151,11 +166,7 @@ untar_lua_rocks_path() {
   local version=$2
   local tmp_download_dir=$3
 
-  if [ "$install_type" = "version" ]; then
-    echo "$tmp_download_dir/luarocks-${version}"
-  else
-    echo "$tmp_download_dir/luarocks-${version}"
-  fi
+  echo "$tmp_download_dir/luarocks-${version}"
 }
 
 download_luaJIT_source() {
@@ -164,10 +175,19 @@ download_luaJIT_source() {
   local download_path=$3
   local download_url
   download_url=$(get_luaJIT_download_url)
+  local git_ref="$version"
+  if [ "$install_type" = "version" ]; then
+    git_ref="v$git_ref"
+  fi
 
   if ! [[ -d "$download_path" ]]; then
     echo clone luajit from "${download_url}" into "${download_path}"
-    git clone --branch=v"$version" "$download_url" "$download_path"
+    if [ "$install_type" = "version" ]; then
+      git clone --branch="$git_ref" "$download_url" "$download_path"
+    else
+      git clone "$download_url" "$download_path"
+      git -C "$download_path" "checkout" "$git_ref"
+    fi
   else
     if [[ $(git -C "$download_path" remote get-url origin) != $(get_luaJIT_download_url) ]]; then
       echo "download directory already exists, but does not look like a usable clone" 1>&2
@@ -178,7 +198,7 @@ download_luaJIT_source() {
     git -C "$download_path" fetch
     git -C "$download_path" clean -d -x -f
     git -C "$download_path" reset --hard
-    git -C "$download_path" checkout v"$version"
+    git -C "$download_path" checkout "$git_ref"
   fi
 }
 
@@ -220,4 +240,14 @@ get_lua_rocks_download_url() {
   echo "https://luarocks.github.io/luarocks/releases/luarocks-${version}.tar.gz"
 }
 
+get_latest_luarocks_version() {
+  local curl_opts=(-fsSL)
+  if [[ -n "${GITHUB_API_TOKEN:-}" ]]; then
+    curl_opts=("${curl_opts[@]}" -H "Authorization: token ${GITHUB_API_TOKEN}")
+  fi
+  curl "${curl_opts[@]}" "https://api.github.com/repos/luarocks/luarocks/tags?per_page=1&page=1" |
+    grep '"name"' | cut -d\" -f4 | cut -c2-
+}
+
 install_luaJIT "$ASDF_INSTALL_TYPE" "$ASDF_INSTALL_VERSION" "$ASDF_INSTALL_PATH"
+

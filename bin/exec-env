@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
 
 # let luarocks provide LUA_PATH and LUA_CPATH:
-eval "$("$ASDF_INSTALL_PATH"/luarocks/bin/luarocks path --no-bin)"
+eval "$("$ASDF_INSTALL_PATH"/bin/luarocks path --no-bin)"
 

@@ -101,7 +101,7 @@ install_luaJIT() {
 
     # the install leaves some references to the build dir; remove them:
     local file
-    for file in "$ASDF_INSTALL_PATH"/luarocks/bin/{luarocks,luarocks-admin}; do
+    for file in "$ASDF_INSTALL_PATH"/bin/{luarocks,luarocks-admin}; do
       # this is the path entry that we want to remove
       local pattern="${source_dir}/src/?.lua;"
       local replacement=""
@@ -139,7 +139,7 @@ construct_lua_rocks_configure_options() {
     local luaJIT_include_path
     luaJIT_include_path="$(find "$install_path"/include -depth 1)"
     local configure_options=(
-      --prefix="$install_path/luarocks"
+      --prefix="$install_path"
       --lua-suffix="jit"
       --with-lua="$install_path"
       --with-lua-include="$luaJIT_include_path"

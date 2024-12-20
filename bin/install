@@ -106,9 +106,9 @@ install_luaJIT() {
       local pattern="${source_dir}/src/?.lua;"
       local replacement=""
       local contents
-      IFS='' read -r -d '' contents < "$file" || true
+      IFS='' read -r -d '' contents <"$file" || true
       truncate -c -s 0 "$file"
-      printf "%s" "${contents//$pattern/$replacement}" >> "$file"
+      printf "%s" "${contents//$pattern/$replacement}" >>"$file"
     done
   )
 }
@@ -137,7 +137,11 @@ construct_luaJIT_configure_options() {
 construct_lua_rocks_configure_options() {
   if [[ "${LUAROCKS_CONFIGURE_OPTIONS-}" == "" ]]; then
     local luaJIT_include_path
-    luaJIT_include_path="$(find "$install_path"/include -depth 1)"
+    if [[ "$OSTYPE" = "darwin"* ]] && [[ -z "${MACOSX_DEPLOYMENT_TARGET-}" ]]; then
+      luaJIT_include_path="$(find "$install_path"/include -depth 1)"
+    else
+      luaJIT_include_path="$(find "$install_path"/include -mindepth 1 -maxdepth 1)"
+    fi
     local configure_options=(
       --prefix="$install_path"
       --lua-suffix="jit"
@@ -250,4 +254,3 @@ get_latest_luarocks_version() {
 }
 
 install_luaJIT "$ASDF_INSTALL_TYPE" "$ASDF_INSTALL_VERSION" "$ASDF_INSTALL_PATH"
-

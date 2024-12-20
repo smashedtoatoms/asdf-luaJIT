@@ -3,7 +3,6 @@
 LuaJIT plugin for [asdf](https://github.com/asdf-vm/asdf) version manager
 
 This plugin also installs luarocks along with luaJIT.  It is not currently an optional install.  If you need it to be, please let me know.
-You specify both versions in the asdf version.  For example, if you want luaJIT 2.0.5 with luarocks 2.4.4, your asdf version will be specified as 2.0.5--2.4.4.
 
 ## Dependencies
 1. You will need a compiler.
@@ -34,7 +33,7 @@ When installing LuaJIT using `asdf install`, you can pass custom configure optio
 
 # How to use (easier version)
 ## Install
-1. Create your .tool-versions file in the project that needs luaJIT and add `luaJIT 2.0.5--2.4.4` or whatever version that you want. __Note: the version is luaJITVersion--luarocksVersion__
+1. Create your .tool-versions file in the project that needs luaJIT and add `luaJIT 2.0.5` or whatever version that you want.
 2. Add a `LUAJIT_EXTRA_CONFIGURE_OPTIONS` and/or
    `LUAROCKS_EXTRA_CONFIGURE_OPTIONS` environment variables with config options
    if you want. _You probably don't want/need to do this._
@@ -43,4 +42,4 @@ When installing LuaJIT using `asdf install`, you can pass custom configure optio
    for example)
 
 ## Run
-1. Once it is done, run `luajit`.  If it says something about having no version set, make sure you set `luaJIT luaJITVersion--luarocksVersion` in your ~/.tool-versions file.
+1. Once it is done, run `luajit`.  If it says something about having no version set, make sure you set `luaJIT luaJITVersion` in your ~/.tool-versions file.
